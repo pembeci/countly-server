@@ -8,17 +8,14 @@
 
     };
 
-    treemapPlugin.fetchTreemapData = function(treemapType, date_range) {
+    treemapPlugin.fetchTreemapData = function(treemapType) {
 
         var data = {
             "app_id": countlyCommon.ACTIVE_APP_ID,
-            "treemap_type": treemapType,
             "method": "treemap"
+            "level1": "cc",
+            "level2": "r"
         };
-
-        if (date_range) {
-            data.date_range = date_range;
-        }
 
         return $.ajax({
             type: "GET",
@@ -26,6 +23,7 @@
             data: data,
             success: function(json) {
                 _treemapData = json;
+                console.log("treemap data", json);
             }
         });
     };
