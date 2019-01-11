@@ -64,6 +64,7 @@
             event = event + "(s)";
         }
 
+        /*
         var chart = d3.select('#chart').append('svg')
             .attr('width', width + margin.left + margin.right)
             .attr('height', height + margin.top + margin.bottom)
@@ -78,8 +79,9 @@
             .style('stroke', '#D0D0D0')
             .style('stroke-width', borderWidth)
             .style('shape-rendering', 'crispEdges');
+      */
 
-        var data = {
+        var root = {
           "name": "A1",
           "children": [
             {
@@ -109,18 +111,50 @@
         var treemap = d3.layout.treemap()
         treemap
           .size([width, height])
-          .padding(10);
-        var nodes = treemap.nodes(data);
-        console.log(nodes);
-        chart
-          .selectAll('rect')
-          .data(nodes)
-          .enter()
-          .append('rect')
-          .attr('x', function(d) { return d.x; })
-          .attr('y', function(d) { return d.y; })
-          .attr('width', function(d) { return d.dx })
-          .attr('height', function(d) { return d.dy })
+          .sticky(true)
+          .padding(5);
+
+        var treeNodes = treemap.nodes(prototype);
+        console.log(treeNodes);
+        var color = d3.scale.category10();
+
+        var div = d3.select("#chart").append("div")
+                    .style("position", "relative")
+                    .style("width", (width + margin.left + margin.right) + "px")
+                    .style("height", (height + margin.top + margin.bottom) + "px")
+                    .style("left", margin.left + "px")
+                    .style("top", margin.top + "px");
+
+        var nodes = div.datum(root).selectAll(".node")
+            .data(treemap.nodes)
+          .enter().append("div")
+            .attr("class", "node")
+            .call(position)
+            .style("background", function(d,i) { return d.children ? color(i) : null; })
+            .text(function(d) { return d.children ? null : d.name; });
+
+        nodes
+            .data(treemap.nodes)
+          .transition()
+            .duration(1500)
+            .call(position);
+
+        function position() {
+              this.style("left", function(d) { return d.x + "px"; })
+                  .style("top", function(d) { return d.y + "px"; })
+                  .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
+                  .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+        }
+
+        d3.selectAll('.node').on('mouseover',function(){
+          d3.select(this).style('box-shadow','3px 0px 30px #fff');
+        });
+        d3.selectAll('.node').on('mouseout',function(){
+          d3.select(this).style('box-shadow','none');
+        });
+
+
+
 
         // loadPunchCard(timesOfDayData);
 

@@ -1,12 +1,27 @@
+#treemap #chart {
+  position: relative;
+}
+
+#treemap #chart .node {
+          border: solid 1px white;
+          font: 14px sans-serif;
+          line-height: 12px;
+          overflow: hidden;
+          position: absolute;
+          text-indent: 2px;
+          font-weight: bold;
+          color:#fff;
+}
+
 #treemap text {
     cursor: default;
 }
-  
+
 #treemap .dot-label text {
     font-size: 12px;
 }
-  
-#treemap .treemap-xlabel, 
+
+#treemap .treemap-xlabel,
 #treemap .treemap-ylabel{
     font-size : 14px;
     font-family: Ubuntu,Helvetica,sans-serif;
