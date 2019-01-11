@@ -1,0 +1,27 @@
+{
+  "name": "treemap",
+  "title": "Treemap Visualization",
+  "version": "1.0.0",
+  "description": "Visualise multivariate data as treemap hierarchies",
+  "author": "Izzet Pembeci",
+  "homepage": "https://count.ly/plugins/treemap",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/pemnbeci/countly-server.git"
+  },
+  "bugs": {
+    "url": "http://github.com/pembeci/countly-server/issues"
+  },
+  "keywords": [
+    "countly",
+    "analytics",
+    "mobile",
+    "treemap",
+    "session",
+    "events",
+    "data",
+    "visualization"
+  ],
+  "dependencies": {},
+  "private": true
+}
