@@ -110,7 +110,7 @@
         treemap
           .size([width, height])
           .padding(10);
-        var nodes = treeMap.nodes(data);
+        var nodes = treemap.nodes(data);
         console.log(nodes);
         chart
           .selectAll('rect')
