@@ -6,20 +6,17 @@ window.treemapview = countlyView.extend({
 
     beforeRender: function() {
         var self = this;
-        self.treemap_type = "[CLY]_session";
-        self.date_range = this.getDateRange('current');
-        if (!this.timesOfDayData || !this.template) {
+        if (!this.treemapData || !this.template) {
             return $.when($.get(countlyGlobal.path + '/treemap/templates/treemap.html', function(src) {
                 self.template = Handlebars.compile(src);
-            }), treemapPlugin.fetchAllEvents(), treemapPlugin.fetchTreemapData(self.treemap_type, self.date_range)).then(function() {
-                self.timesOfDayData = treemapPlugin.getTreemapData();
-                self.eventsList = treemapPlugin.getEventsList();
-            });
+            }), treemapPlugin.fetchTreemapData().then(function() {
+                self.treemapData = treemapPlugin.getTreemapData();
+            }) )
         }
 
 
     },
-
+    /*
     loadSessionEventData: function() {
         $("#event-session-list").html('<div data-value="[CLY]_session" class="es-option item" data-localize="treemap.sessions">' + jQuery.i18n.map['treemap.sessions'] + '</div>');
         $("#event-session-list").append('<div class="group">' + jQuery.i18n.map['treemap.events'] + '</div>');
@@ -63,7 +60,7 @@ window.treemapview = countlyView.extend({
             return;
         }
     },
-
+    */
     renderCommon: function(isRefresh) {
         this.templateData = {
             "page-title": jQuery.i18n.map["treemap.plugin-title"]
@@ -74,7 +71,7 @@ window.treemapview = countlyView.extend({
             this.updateView();
 
             var self = this;
-
+            /*
             $('.ds').on('click', function() {
                 var id = $(this).attr('id');
 
@@ -105,110 +102,17 @@ window.treemapview = countlyView.extend({
                     self.updateView();
                 });
             });
+            */
         }
     },
 
     updateView: function() {
         $('#chart').empty();
-        this.loadSessionEventData();
-        this.loadTimesOfDay();
-        this.loadTimeOfDayTable();
+        // this.loadSessionEventData();
+        // this.loadTimesOfDay();
+        // this.loadTimeOfDayTable();
     },
 
-    loadTimesOfDay: function() {
-        treemapPlugin.loadTimesOfDay(this.timesOfDayData, this.treemap_type === "[CLY]_session" ? jQuery.i18n.map['treemap.sessions'] : this.treemap_type);
-    },
-
-    loadTimeOfDayTable: function() {
-        var self = this;
-        var tableData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23].map(function(h) {
-            return {
-                hour: h,
-                sunday: self.timesOfDayData[0][h],
-                monday: self.timesOfDayData[1][h],
-                tuesday: self.timesOfDayData[2][h],
-                wednesday: self.timesOfDayData[3][h],
-                thursday: self.timesOfDayData[4][h],
-                friday: self.timesOfDayData[5][h],
-                saturday: self.timesOfDayData[6][h],
-            };
-        });
-
-        this.dtable = $('#dataTableOne').dataTable($.extend({}, $.fn.dataTable.defaults, {
-            "aaData": tableData,
-            "fnRowCallback": function() {},
-            "aoColumns": [
-                {
-                    "mData": "hour",
-                    "mRender": function(hour) {
-                        var nextHour = hour + 1 > 23 ? 0 : hour + 1;
-                        return (hour < 10 ? "0" + hour : hour) + ":00 - " + (nextHour < 10 ? "0" + nextHour : nextHour) + ":00";
-                    },
-                    "sType": "string",
-                    "sTitle": jQuery.i18n.map['treemap.hours']
-                },
-                {
-                    "mData": "monday",
-                    "sType": "numeric",
-                    "sTitle": jQuery.i18n.map['treemap.monday'],
-                    "mRender": function(d) {
-                        return countlyCommon.formatNumber(d);
-                    }
-                },
-                {
-                    "mData": "tuesday",
-                    "sType": "numeric",
-                    "sTitle": jQuery.i18n.map['treemap.tuesday'],
-                    "mRender": function(d) {
-                        return countlyCommon.formatNumber(d);
-                    }
-                },
-                {
-                    "mData": "wednesday",
-                    "sType": "numeric",
-                    "sTitle": jQuery.i18n.map['treemap.wednesday'],
-                    "mRender": function(d) {
-                        return countlyCommon.formatNumber(d);
-                    }
-                },
-                {
-                    "mData": "thursday",
-                    "sType": "numeric",
-                    "sTitle": jQuery.i18n.map['treemap.thursday'],
-                    "mRender": function(d) {
-                        return countlyCommon.formatNumber(d);
-                    }
-                },
-                {
-                    "mData": "friday",
-                    "sType": "numeric",
-                    "sTitle": jQuery.i18n.map['treemap.friday'],
-                    "mRender": function(d) {
-                        return countlyCommon.formatNumber(d);
-                    }
-                },
-                {
-                    "mData": "saturday",
-                    "sType": "numeric",
-                    "sTitle": jQuery.i18n.map['treemap.saturday'],
-                    "mRender": function(d) {
-                        return countlyCommon.formatNumber(d);
-                    }
-                },
-                {
-                    "mData": "sunday",
-                    "sType": "numeric",
-                    "sTitle": jQuery.i18n.map['treemap.sunday'],
-                    "mRender": function(d) {
-                        return countlyCommon.formatNumber(d);
-                    }
-                }
-            ]
-        }));
-
-        this.dtable.stickyTableHeaders();
-        this.dtable.fnSort([[0, 'asc']]);
-    },
     refresh: function() {
     },
 });

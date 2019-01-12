@@ -12,14 +12,14 @@
 
         var data = {
             "app_id": countlyCommon.ACTIVE_APP_ID,
-            "method": "treemap"
+            // "method": "treemap",
             "level1": "cc",
             "level2": "r"
         };
 
         return $.ajax({
             type: "GET",
-            url: countlyCommon.API_URL + "/o",
+            url: countlyCommon.API_URL + "/o/treemap",
             data: data,
             success: function(json) {
                 _treemapData = json;
@@ -112,8 +112,6 @@
           .sticky(true)
           .padding(5);
 
-        var treeNodes = treemap.nodes(prototype);
-        console.log(treeNodes);
         var color = d3.scale.category10();
 
         var div = d3.select("#chart").append("div")

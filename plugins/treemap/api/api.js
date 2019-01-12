@@ -1,14 +1,16 @@
 var plugin = {},
     common = require('../../../api/utils/common.js'),
-    plugins = require('../../pluginManager.js'),
-    moment = require('moment');
+    plugins = require('../../pluginManager.js')
+    // moment = require('moment');
+
+var log = common.log('treemap:api');
 
 (function() {
 
-    plugins.register("/o", function(ob) {
+    plugins.register("/o/treemap", function(ob) {
         var params = ob.params;
-
-        if (params.qstring.method === "treemap") {
+        log.i(params);
+        if (true || params.qstring.method === "treemap") {
             var appId = params.qstring.app_id;
 
             var criteria = {};
@@ -20,7 +22,7 @@ var plugin = {},
               }
             })
 
-
+            log.i(criteria, project);
             var collectionName = "app_users" + appId;
 
             fetchTreemapData(collectionName, criteria, project, function(err, result) {
@@ -37,7 +39,6 @@ var plugin = {},
         }
         return false;
     });
-
     /**
      * Fetch Treemap Visualization Plugin Data
      * @param {string} collectionName | Name of collection
@@ -45,7 +46,7 @@ var plugin = {},
      * @param {func} callback | Callback function
      */
     function fetchTreemapData(collectionName, criteria, project, callback) {
-        common.db.collection(collectionName).find(criteria, project).toArray(function(err, results) {
+        common.db.collection(collectionName).find(criteria).toArray(function(err, results) {
             if (err) {
                 return callback(err);
             }
