@@ -51,7 +51,7 @@ var log = common.log('treemap:api');
             if (err) {
                 return callback(err);
             }
-            var root = { name: "root", children: {} };
+            var root = { name: "Users", children: {} };
             results.forEach(d => {
               var vals = levels.map(prop => d[prop]);
               var parent = root;             
