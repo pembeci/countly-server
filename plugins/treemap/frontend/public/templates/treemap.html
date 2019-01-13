@@ -5,23 +5,27 @@
                 <div class="title small">{{page-title}}</div>
 
             </div>
-            <div style="width:300px; display: inline-block;">
-                <div class="cly-select float">
+            <div style="width:600px; display: inline-block;">
+              {{#eachOfArray levels}}                
+                <div data-level="{{value}}" class="cly-select float">                    
                     <div class="select-inner">
                         <div class="text-container">
-                            <div class="text" id="es-selector" data-localize="treemap.sessions"></div>
+                            <div class="text" id="es-selector{{value}}" data-localize="">Level {{value}}</div>
                         </div>
                         <div class="right combo">
                         </div>
                     </div>
                     <div class="select-items square">
-                        <div id="event-session-list">
+                        <div id="props-list{{value}}">
 
                         </div>
                     </div>
                 </div>
+              {{/eachOfArray}}
+              <div id="treemap-submit" class="icon-button green">SHOW</div>
             </div>
         </div>
+        <!--
         <div id="date-selector" class="help-zone-vs">
             <div class="date-buttons-container">
                 <div class="button ds" id="ds_all" data-localize="treemap.all-time">All</div>
@@ -30,6 +34,7 @@
                 <div class="button ds active selected" id="ds_this" data-localize="treemap.this-month">This Month</div>
             </div>
 		</div>
+        -->
     </div>
     <div class="widget-content" style="padding-top: 30px">
         <center>

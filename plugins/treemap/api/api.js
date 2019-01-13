@@ -9,23 +9,24 @@ var log = common.log('treemap:api');
 
     plugins.register("/o/treemap", function(ob) {
         var params = ob.params;
-        log.i(params);
         if (true || params.qstring.method === "treemap") {
             var appId = params.qstring.app_id;
 
             var criteria = {};
             var project = { _id: 0 };
+            var levels = [];
             Object.keys(params.qstring).forEach(prop => {
               if (prop.startsWith("level")) {
                 criteria[params.qstring[prop]] = { $exists: true };
                 project[params.qstring[prop]] = 1;
+                var levelNo = prop.substring(5);
+                levels[Number.parseInt(levelNo) - 1] = params.qstring[prop];
               }
             })
-
-            log.i(criteria, project);
+            log.i("levels", levels);
             var collectionName = "app_users" + appId;
 
-            fetchTreemapData(collectionName, criteria, project, function(err, result) {
+            fetchTreemapData(collectionName, criteria, project, levels, function(err, result) {
                 if (err) {
                     console.log("Error while fetching treemap data: ", err.message);
                     common.returnMessage(params, 400, "Error while fetching treemap data");
@@ -45,13 +46,43 @@ var log = common.log('treemap:api');
      * @param {object} criteria | Filter object
      * @param {func} callback | Callback function
      */
-    function fetchTreemapData(collectionName, criteria, project, callback) {
+    function fetchTreemapData(collectionName, criteria, project, levels, callback) {
         common.db.collection(collectionName).find(criteria).toArray(function(err, results) {
             if (err) {
                 return callback(err);
             }
-
-            return callback(null, results);
+            var root = { name: "root", children: {} };
+            results.forEach(d => {
+              var vals = levels.map(prop => d[prop]);
+              var parent = root;             
+              vals.forEach((val,i) => {
+                const leafNode = i+1 == vals.length;
+                if (!parent.children.hasOwnProperty(val)) {
+                  var node = { name: val };
+                  if (!leafNode) {
+                    node.children = {};
+                  }
+                  else {
+                    node.value = 1;
+                  } 
+                  parent.children[val] = node;
+                } 
+                else if (leafNode) {
+                  parent.children[val].value++;
+                } 
+                parent = parent.children[val];
+              }); 
+            });
+            // let's convert children objects to arrays as required by d3 using breadh-first search
+            var q = [root];
+            while (q.length > 0) {
+              var node = q.pop();
+              if (node.children) {
+                node.children = Array.from(Object.values(node.children));
+                q.push(...node.children);
+              }
+            }
+            return callback(null, root);
         });
     }
 

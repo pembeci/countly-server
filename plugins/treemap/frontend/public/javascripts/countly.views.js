@@ -1,7 +1,10 @@
 /*global $,countlyView,countlyGlobal,Handlebars,treemapPlugin,jQuery,countlyCommon,app,moment,treemapview,countlyDashboards */
 window.treemapview = countlyView.extend({
 
-    initialize: function() {
+    initialize: function() { 
+       this.maxLevel = 3;    
+       this.initLevels = ["la", "p"];
+       this.selectedLevels = Array.from({length: this.maxLevel}).map((v,i) => null);       
     },
 
     beforeRender: function() {
@@ -9,7 +12,7 @@ window.treemapview = countlyView.extend({
         if (!this.treemapData || !this.template) {
             return $.when($.get(countlyGlobal.path + '/treemap/templates/treemap.html', function(src) {
                 self.template = Handlebars.compile(src);
-            }), treemapPlugin.fetchTreemapData().then(function() {
+            }), treemapPlugin.fetchTreemapData(this.initLevels).then(function() {
                 self.treemapData = treemapPlugin.getTreemapData();
             }) )
         }
@@ -63,11 +66,13 @@ window.treemapview = countlyView.extend({
     */
     renderCommon: function(isRefresh) {
         this.templateData = {
-            "page-title": jQuery.i18n.map["treemap.plugin-title"]
+            "page-title": jQuery.i18n.map["treemap.plugin-title"],
+            "levels": Array.from({length: this.maxLevel}).map((v,i) => i+1)
         };
 
         if (!isRefresh) {
             $(this.el).html(this.template(this.templateData));
+            this.populateProps();
             this.updateView();
 
             var self = this;
@@ -107,12 +112,41 @@ window.treemapview = countlyView.extend({
     },
 
     updateView: function() {
-        $('#chart').empty();
-        // this.loadSessionEventData();
-        // this.loadTimesOfDay();
-        // this.loadTimeOfDayTable();
+        console.log("updateView", this);
+        let selected = this.selectedLevels;
+        if (!selected[0]) {
+            // initial. temporary.
+            selected = this.initLevels;
+        }
+        $('#chart').empty();        
+        this.loadTreemap(selected);        
     },
-
+    
+    populateProps: function() {
+        const self = this;
+        const props = { 'cc': 'Country', 'p': 'Platform', 'la': 'Language', 'r': 'Resolution',
+                        'd': 'Device', 'c': 'Carrier', 'brw': 'Browser' };                                    
+        this.templateData.levels.forEach(level => {
+            const list = $(`#props-list${level}`);
+            list.append(`<div class="group">Level ${level}</div>`);
+            Object.entries(props).forEach( arr => {
+                const [prop, val] = arr
+                list.append(`<div data-value="${prop}" class="es-option item" data-localize="">${val}</div>`);
+            })
+            $(".cly-select").eq(level-1).on("cly-select-change", (e, option) => {
+                self.selectedLevels[level-1] = option;
+                console.log(self.selectedLevels);
+            })
+            
+        });
+        $('#treemap-submit').click(() => { this.updateView(); }); 
+    },
+    
+    loadTreemap: function(selectedLevels) {
+        console.log("loadTreemap view", selectedLevels);
+        treemapPlugin.loadTreemap(selectedLevels);
+    },
+    
     refresh: function() {
     },
 });
