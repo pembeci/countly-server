@@ -204,7 +204,7 @@
                     var c = d3.rgb(color(d.parent.name));                    
                     var colorScale = d3.scale.linear()
                                       .domain([0,100])
-                                      .range([c.brighter(2), c.darker(2)]);
+                                      .range([c.brighter(3), c.darker(3)]);
                     return colorScale(100 * d.value / d.parent.value); 
                 });
 

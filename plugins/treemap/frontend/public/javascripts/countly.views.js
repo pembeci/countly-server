@@ -179,7 +179,7 @@ $(document).ready(function() {
         '<div class="text" data-localize="treemap.plugin-title"></div>' +
         '</a>';
 
-    $('.sidebar-menu #engagement-submenu').append(menu);
+    $('.sidebar-menu #analytics-submenu').append(menu);
 
     initializeTimesOfDayWidget();
 });
